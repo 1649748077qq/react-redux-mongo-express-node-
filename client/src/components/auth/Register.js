@@ -1,6 +1,10 @@
 import React, { Component } from "react";
-import axios from "axios";
+import PropTypes from "prop-types";
+import { withRouter } from "react-router-dom";
 import classnames from "classnames";
+import { connect } from "react-redux";
+import { registerUser } from "../../actions/authActions";
+import authReducer from "../../reducers/authReducer";
 class Register extends Component {
   constructor() {
     super();
@@ -27,16 +31,26 @@ class Register extends Component {
       password: this.state.password,
       password2: this.state.password2
     };
-    axios
-      .post("/api/users/register", newUser)
-      .then(res => console.log(res.data))
-      .catch(err => this.setState({ errors: err.response.data }));
+    //调用action
+    this.props.registerUser(newUser, this.props.history);
+    // axios
+    //   .post("/api/users/register", newUser)
+    //   .then(res => console.log(res.data))
+    //   .catch(err => this.setState({ errors: err.response.data }));
+  }
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.errors) {
+      this.setState({
+        errors: nextProps.errors
+      });
+    }
   }
   render() {
     const errors = this.state.errors;
+    // const { user } = this.props.auth;
     return (
       <div className="register">
-        {/* {user ? user.name : null} */}
+        {/*{user ? user.name : null}*/}
         <div className="container">
           <div className="row">
             <div className="col-md-8 m-auto">
@@ -120,5 +134,18 @@ class Register extends Component {
     );
   }
 }
-
-export default Register;
+Register.PropTypes = {
+  registerUser: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
+  errors: PropTypes.object.isRequired
+};
+//将状态映射为属性
+const mapStateToProps = state => ({
+  auth: state.auth,
+  errors: state.errors
+});
+// export default Register;
+export default connect(
+  mapStateToProps,
+  { registerUser }
+)(withRouter(Register));

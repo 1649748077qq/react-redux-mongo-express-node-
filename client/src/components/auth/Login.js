@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
+import { loginUser } from "../../actions/authActions";
 class Login extends Component {
   constructor() {
     super();
@@ -21,6 +23,7 @@ class Login extends Component {
       email: this.state.email,
       password: this.state.password
     };
+    this.props.loginUser(newUser);
   }
   render() {
     return (
@@ -61,4 +64,7 @@ class Login extends Component {
   }
 }
 
-export default Login;
+export default connect(
+  null,
+  { loginUser }
+)(Login);
